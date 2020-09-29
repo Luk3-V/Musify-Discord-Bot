@@ -1,0 +1,24 @@
+{
+  "name": "musify-discord-bot",
+  "version": "0.2.0",
+  "description": "A music bot for Discord using the Spotify & Youtube API.",
+  "author": "Luke Vanhaezebrouck",
+  "main": "index.js",
+  "license": "ISC",
+  "engines": {
+    "node": "12.x"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^12.3.1",
+    "ffmpeg-static": "^4.2.7",
+    "opusscript": "0.0.7",
+    "simple-youtube-api": "^5.2.1",
+    "spotify-web-api-node": "^4.0.0",
+    "xmlhttprequest": "^1.8.0",
+    "ytdl-core": "^3.3.0",
+    "ytdl-core-discord": "^1.2.3"
+  }
+}
