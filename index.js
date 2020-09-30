@@ -22,6 +22,7 @@ const { readdirSync } = require('fs');
 const { TOKEN, PREFIX, VERSION } = require('./config.json');
 
 const client = new Client();
+client.options.http.api = 'https://discord.com/api';
 client.commands = new Collection();
 client.prefix = PREFIX;
 client.queues = new Map();
