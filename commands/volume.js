@@ -8,15 +8,16 @@ module.exports = {
     execute(message, args) {
         const queue = message.client.queues.get(message.guild.id);
 
+        var val = parseInt(args[0]);
         if(!args.length) 
             return message.channel.send(`🔊 **The current volume is:** \`${message.client.volume}%\``).catch(console.error);
-        if(isNaN(args[0]) || parseInt(args[0]) > 100 || parseInt(args[0]) < 0)
+        if(isNaN(val) || val > 100 || val < 0 )
             return message.channel.send(`**Usage:** \`${message.client.prefix}volume <Number between 1-100>\` (${message.author})`).catch(console.error);
 
-        message.client.volume = args[0];
+        message.client.volume = val;
         if(queue)
-            queue.connection.dispatcher.setVolumeLogarithmic(args[0] / 100);
+            queue.connection.dispatcher.setVolumeLogarithmic(val / 100);
 
-        return message.channel.send(`🔊  **Volume set to:** \`${args[0]}%\``).catch(console.error);
+        return message.channel.send(`🔊  **Volume set to:** \`${val}%\``).catch(console.error);
     }
 };

@@ -12,27 +12,28 @@ module.exports = {
           return message.channel.send(`No songs in queue (${message.author})`).catch(console.error);
 
         var song = `\`${queue.current.title}\``;
+        var val = parseInt(args[0]);
         if(args.length) {
-            if(isNaN(args[0])) {
+            if(isNaN(val) || val < 1) {
                 return message.channel.send(`**Usage:** \`${message.client.prefix}${module.exports.name} <Optional: Number>\` (${message.author})`).catch(console.error);
             } else if(!queue.auto) {
-                if (args[0]-1 > queue.songs.length) {
-                    song += ` **&** \`${queue.songs.length-1}\` **song(s)**`;
+                if (val-1 > queue.songs.length) {
+                    song += ` **&** \`${queue.songs.length}\` **song(s)**`;
                     queue.songs = [];
                 }
                 else {
-                    song += ` **&** \`${args[0]-1}\` **song(s)**`;
-                    queue.songs = queue.songs.slice(args[0]-1);
+                    song += ` **&** \`${val-1}\` **song(s)**`;
+                    queue.songs = queue.songs.slice(val-1);
                 }
             } else {
-                if (args[0]-1 > queue.autoSongs.length) {
-                    song += ` **&** \`${queue.autoSongs.length-1}\` **song(s)**`;
+                if (val-1 > queue.autoSongs.length) {
+                    song += ` **&** \`${queue.autoSongs.length}\` **song(s)**`;
                     queue.autoSongs = [];
                     await loadAutoplay(queue.current, message);
                 }
                 else {
-                    song += ` **&** \`${args[0]-1}\` **song(s)**`;
-                    queue.autoSongs = queue.autoSongs.slice(args[0]-1);
+                    song += ` **&** \`${val-1}\` **song(s)**`;
+                    queue.autoSongs = queue.autoSongs.slice(val-1);
                 }
             }
         }

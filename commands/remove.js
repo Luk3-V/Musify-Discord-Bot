@@ -9,10 +9,11 @@ module.exports = {
         if(!queue) 
             return message.channel.send(`No songs in queue (${message.author})`).catch(console.error);
 
-        if(!args.length || isNaN(args[0])) 
+        var val = parseInt(args[0]);
+        if(!args.length || isNaN(val) || val > queue.songs.length || val < 0) 
             return message.channel.send(`**Usage:** \`${message.client.prefix}remove <Queue Number>\` (${message.author})`);
 
-        const song = queue.songs.splice(args[0] - 1, 1);
+        const song = queue.songs.splice(val-1, 1);
         queue.textChannel.send(`❌ **Removed** \`${song[0].title}\` **from the queue**`);
     }
 };
