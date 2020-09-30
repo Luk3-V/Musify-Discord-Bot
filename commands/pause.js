@@ -13,10 +13,6 @@ module.exports = {
             queue.playing = false;
             queue.connection.dispatcher.pause(true);
 
-            /*let embed = new MessageEmbed()
-                .setColor("#1DB954")
-                .setTitle('⏸  Paused');*/
-
             return queue.textChannel.send('⏸ **Paused**').catch(console.error);
         }
     }

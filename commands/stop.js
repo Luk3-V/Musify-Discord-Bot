@@ -11,9 +11,6 @@ module.exports = {
             return message.channel.send(`No songs in queue (${message.author})`).catch(console.error);
 
         queue.voiceChannel.leave();
-        /*let embed = new MessageEmbed()
-            .setColor("#1DB954")
-            .setTitle('⏹  Stopped');*/
 
         return queue.textChannel.send('⏹ **Stopped**').catch(console.error);
     }

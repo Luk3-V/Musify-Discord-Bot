@@ -11,9 +11,6 @@ module.exports = {
             return message.channel.send(`Nothing is playing (${message.author})`).catch(console.error);
 
         queue.songs = [];
-        /*let embed = new MessageEmbed()
-            .setColor("#1DB954")
-            .setTitle('💥  Cleared');*/
 
         return queue.textChannel.send('💥 **Cleared**').catch(console.error);
     }

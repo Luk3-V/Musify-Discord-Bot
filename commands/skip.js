@@ -38,9 +38,6 @@ module.exports = {
         }
         queue.playing = true;
         queue.connection.dispatcher.end();
-        /*let embed = new MessageEmbed()
-            .setColor("#1DB954")
-            .setTitle('⏭  Skipped');*/
 
         return queue.textChannel.send(`⏭ **Skipped** ${song}`).catch(console.error);
     }
