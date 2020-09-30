@@ -55,7 +55,7 @@ client.on('message', message => {
 	try {
 		command.execute(message, args);
 	} catch(error) {
-		console.error(error);
+		console.error(`[${message.guild.id}] ${error}`);
 		message.channel.send(`**Error executing command.** ${message.author}`).catch(console.error);
 	}
 });
