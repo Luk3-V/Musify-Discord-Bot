@@ -70,14 +70,14 @@ module.exports = {
 				module.exports.playQueue(message);
 			});
 			dispatcher.on('error', (err) => { // Error & skip song
-				console.error(err);
+				console.error(`[${message.guild.id}] ${err}`);
 				message.channel.send(`⚠ **Error:** ${err.message ? err.message : err}`);
 				module.exports.playQueue(message);
 			});
 			dispatcher.setVolumeLogarithmic(message.client.volume / 100);
 
 		} catch(error) { // Cant Load Song
-			console.error(error);
+			console.error(`[${message.guild.id}] ${error}`);
 			message.channel.send(`⚠ **Error:** ${error.message ? error.message : error}`);
 
 			module.exports.playQueue(message);		

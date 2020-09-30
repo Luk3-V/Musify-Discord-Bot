@@ -12,7 +12,7 @@ module.exports = {
 		playlist = await autoPlaylist(message, [song.title, song.artist], 3);	
 
 	    if(!playlist.length) {
-	    	console.log(`[${message.guild.id}] Error w/ Autoplay!`);
+	    	console.error(`[${message.guild.id}] Error w/ Autoplay!`);
 	    	return;
 	    }
 

@@ -54,7 +54,7 @@ module.exports = {
 		    	const searches = await Promise.all(songs.map(e => youtube.searchVideos(e[0]+' '+e[1]+' audio', 1)));
 				playlist = await Promise.all(searches.map(e => ytdl.getInfo(e[0].url)));
 			} catch(error) {
-				console.error(error);
+				console.error(`[${message.guild.id}] ${error}`);
         		return message.channel.send(`⚠ **Song(s) not found** (${message.author})`).catch(console.error);
 			}
 	    } else {
@@ -73,7 +73,7 @@ module.exports = {
 				await queueObject.connection.voice.setSelfDeaf(true);
 				playQueue(message);
 		    } catch(error) {
-				console.error(error);
+				console.error(`[${message.guild.id}] ${error}`);
 				message.client.queues.delete(message.guild.id);
 				await voiceChannel.leave();
 				return message.channel.send(`⚠ **Can't join channel:** ${error}`).catch(console.error);

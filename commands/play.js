@@ -100,7 +100,7 @@ module.exports = {
 
             message.channel.send(songEmbed).catch(console.error);
 	    } catch(error) {
-			console.error(error);
+			console.error(`[${message.guild.id}] ${error}`);
 			message.client.queues.delete(message.guild.id);
 			await voiceChannel.leave();
 			return message.channel.send(`⚠ **Can't join channel:** ${error}`).catch(console.error);
