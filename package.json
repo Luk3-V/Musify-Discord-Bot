@@ -17,6 +17,7 @@
     "opusscript": "0.0.7",
     "simple-youtube-api": "^5.2.1",
     "spotify-web-api-node": "^4.0.0",
+    "string-progressbar": "^1.0.1",
     "xmlhttprequest": "^1.8.0",
     "ytdl-core": "^3.3.0",
     "ytdl-core-discord": "^1.2.3"
