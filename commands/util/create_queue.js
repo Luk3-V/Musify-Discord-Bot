@@ -20,7 +20,8 @@ module.exports = {
 				artist: null,
 				url: e.videoDetails.video_url,
 				image: e.videoDetails.thumbnail.thumbnails[0].url,
-				duration: e.videoDetails.lengthSeconds,
+				channel: e.videoDetails.author.name,
+				duration: e.videoDetails.lengthSeconds
 			};
 			console.log(`[${message.guild.id}] QUEUED: ` + song.title + '  RESTRICTED=' + e.videoDetails.age_restricted);
 

@@ -76,6 +76,8 @@ module.exports = {
                 .setAuthor('Added to Queue', message.author.avatarURL())
                 .setThumbnail(song.image)
                 .setDescription(`[**${song.title}**](${song.url})`)
+                .addField('Channel:', song.channel, true)
+                .addField('Duration:', (song.duration == 0 ? " ◉ LIVE" : new Date(song.duration * 1000).toISOString().substr(11, 8).replace(/^(0|:){1,4}/, '')), true)
                 .setFooter(message.client.autoplay ? `Autoplay : ON` : `Autoplay : OFF`);
 
             return serverQueue.textChannel.send(songEmbed).catch(console.error);
@@ -92,6 +94,8 @@ module.exports = {
                 .setTitle('🎶  Now Playing')
                 .setThumbnail(song.image)
                 .setDescription(`[**${song.title}**](${song.url})`)
+                .addField('Channel:', song.channel, true)
+                .addField('Duration:', (song.duration == 0 ? " ◉ LIVE" : new Date(song.duration * 1000).toISOString().substr(11, 8).replace(/^(0|:){1,4}/, '')), true)
                	.setFooter(message.client.autoplay ? `Autoplay : ON` : `Autoplay : OFF`);
 
             message.channel.send(songEmbed).catch(console.error);
