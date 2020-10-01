@@ -80,6 +80,9 @@ module.exports = {
 		    	playlistEmbed.setTitle(title);
 		    } 
 
+		    if(title == 'genre-error') {
+		    	return message.channel.send(`No matching genres. Use \`${message.client.prefix}spotify genres\` to see valid genres (${message.author})`);
+		    }
 		    if(songs.length) {
 		    	try {
 			    	const searches = await Promise.all(songs.map(e => youtube.searchVideos(e[0]+' '+e[1]+' audio', 1)));

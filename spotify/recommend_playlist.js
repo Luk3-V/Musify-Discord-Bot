@@ -15,25 +15,35 @@ module.exports = {
 		if(type.toLowerCase() == 'song' || type.toLowerCase() == 'songs') {
 			let search = await Promise.all(args.map(e => spotify.searchTracks(e, {limit: 1})));
 			let seeds = [];
-			if(await verifySearch(message, search.map(e => e.body.tracks.items[0].name + ' - ' + e.body.tracks.items[0].artists[0].name), 'Songs:'))
+			if(await verifySearch(message, search.map(e => e.body.tracks.items[0].name + ' - ' + e.body.tracks.items[0].artists[0].name), 'Songs:')) {
 				seeds = search.map(e => e.body.tracks.items[0].id);
-			else
-				return [result, title];
-			let recommened = await spotify.getRecommendations({seed_tracks: seeds, min_popularity: 50, limit: size});
-			result = recommened.body.tracks.map(e => [e.name, e.artists[0].name]);
+				let recommened = await spotify.getRecommendations({seed_tracks: seeds, min_popularity: 50, limit: size});
+				result = recommened.body.tracks.map(e => [e.name, e.artists[0].name]);
+			}
 		} 
 		else if(type.toLowerCase() == 'artist' || type.toLowerCase() == 'artists') {
 			let search = await Promise.all(args.map(e => spotify.searchArtists(e, {limit: 1})));
 			let seeds = [];
-			if(await verifySearch(message, search.map(e => e.body.artists.items[0].name), 'Artists:'))
+			if(await verifySearch(message, search.map(e => e.body.artists.items[0].name), 'Artists:')) {
 				seeds = search.map(e => e.body.artists.items[0].id);
-			else
-				return [result, title];
-			let recommened = await spotify.getRecommendations({seed_artists: seeds, min_popularity: 50, limit: size});
-			result = recommened.body.tracks.map(e => [e.name, e.artists[0].name]);
+				let recommened = await spotify.getRecommendations({seed_artists: seeds, min_popularity: 50, limit: size});
+				result = recommened.body.tracks.map(e => [e.name, e.artists[0].name]);
+			}
 		} 
 		else if(type.toLowerCase() == 'genre' || type.toLowerCase() == 'genres') {
-			
+			let genres = await spotify.getAvailableGenreSeeds();
+			let seeds = await Promise.all(args.map(e => (genres.body.genres.includes(e.toLowerCase()) ? e.toLowerCase() : null)));
+			console.log(seeds);
+			seeds = seeds.filter((e) => e);
+			console.log(seeds);
+			if(seeds.length) {
+				if(await verifySearch(message, seeds, 'Genres:')) {
+					let recommened = await spotify.getRecommendations({seed_genres: seeds, min_popularity: 50, limit: size});
+					result = recommened.body.tracks.map(e => [e.name, e.artists[0].name]);
+				}
+			} else {
+				title = 'genre-error';
+			}
 		}
 
 		return [result, title];
