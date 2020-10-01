@@ -37,6 +37,7 @@ module.exports = {
     				searches = await youtube.searchVideos(queue.current[0]+' '+queue.current[1], 1);
 				songInfo = await ytdl.getInfo(searches[0].url);
 				const queueObject = await createQueue([songInfo], message, queue.voiceChannel);
+				queueObject.songs[0].user = 'Autoplay';
 				queue.current = queueObject.songs[0];
     		}
 
@@ -84,60 +85,3 @@ module.exports = {
     	}
 	}
 };
-
-// TODO:
-
-// FIX ERROR WITH MATURE CONTENT VIDEO
-// HAD TO EDIT info.js:56 ON ytdl-core-discord
-
-// FIX BOT FREEZING WHEN SKIPPING AUTO PLAY SONG
-/*HTTPError [AbortError]: The user aborted a request.
-    at RequestHandler.execute (C:\Users\lukev\Desktop\Discord Music Bot\node_modules\discord.js\src\rest\RequestHandler.js:107:21)
-    at runMicrotasks (<anonymous>)
-    at processTicksAndRejections (internal/process/task_queues.js:97:5)
-    at runNextTicks (internal/process/task_queues.js:66:3)
-    at processTimers (internal/timers.js:489:9) {
-  code: 500,
-  method: 'post',
-  path: '/channels/501188122990870530/messages'
-}
-*/
-
-// FIX RANDOM URL ERROR
-/*TypeError [ERR_INVALID_ARG_TYPE]: The "url" argument must be of type string. Received undefined
-    at validateString (internal/validators.js:120:11)
-    at Url.parse (url.js:159:3)
-    at urlParse (url.js:154:13)
-    at Url.resolve (url.js:667:29)
-    at Object.urlResolve [as resolve] (url.js:663:40)
-    at exports.getFullInfo (C:\Users\lukev\Desktop\Discord Music Bot\node_modules\ytdl-core-discord\node_modules\ytdl-core\lib\info.js:197:32)
-    at runMicrotasks (<anonymous>)
-    at processTicksAndRejections (internal/process/task_queues.js:97:5)
-    at async Object.exports.<computed> [as getFullInfo] (C:\Users\lukev\Desktop\Discord Music Bot\node_modules\ytdl-core-discord\node_modules\ytdl-core\lib\info.js:298:18) {
-  code: 'ERR_INVALID_ARG_TYPE'
-}
-*/
-
-
-// MAYBE FIXED:
-
-//Error: FFmpeg/avconv not found!
-//Error: FFmpeg/avconv not found!
-/*internal/modules/cjs/loader.js:968
-  throw err;
-  ^
-
-Error: Cannot find module 'C:\Users\lukev\Desktop\Discord Music Bot\...'
-[90m    at Function.Module._resolveFilename (internal/modules/cjs/loader.js:965:15)[39m
-[90m    at Function.Module._load (internal/modules/cjs/loader.js:841:27)[39m
-[90m    at Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:71:12)[39m
-[90m    at internal/main/run_main_module.js:17:47[39m {
-  code: [32m'MODULE_NOT_FOUND'[39m,
-  requireStack: []
-}
-Thrown at:
-    at Module._resolveFilename (internal/modules/cjs/loader.js:965:15)
-    at Module._load (internal/modules/cjs/loader.js:841:27)
-    at executeUserEntryPoint (internal/modules/run_main.js:71:12)
-    at internal/main/run_main_module.js:17:47
-*/
