@@ -44,20 +44,6 @@ artistPlaylist = async (artist, amount) => {
 
 	let result = [];
 	let keys = [];
-	/*let search = await spotify.searchPlaylists('This is ' + artist.name, {limit: 1});
-		search = search.body.playlists.items[0]
-
-	if(search.owner.id === 'spotify') {
-		let songs = await spotify.getPlaylistTracks(search.id);
-		songs = songs.body.items;
-		songs.forEach(e => {
-			if(!e.track.name.toLowerCase().includes('commentary')) {
-				result.push([e.track.name, e.track.id, e.track.popularity]); 
-				keys.push(e.track.name);
-			}		
-		});
-		result.sort((a, b) => b[2] - a[2]);
-	}*/
 	if(result.length < amount) {
 		let albums = await spotify.getArtistAlbums(artist.id, {limit: 50});
 			albums = albums.body.items;

@@ -69,9 +69,7 @@ verifySearch = async (message, items, type) => {
 	let verifyEmbed = new MessageEmbed()
                 .setColor('#1DB954')
                 .setTitle('❓  Verify Input')
-                //.setDescription('**Create playlist based on...**')
                 .addField(type, items, true)
-                //.setFooter('👍 or 👎');
 
 	let embed = await message.channel.send(verifyEmbed);
 	await embed.react('👍');
