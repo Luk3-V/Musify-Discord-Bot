@@ -3,6 +3,7 @@ const { MessageEmbed } = require("discord.js");
 module.exports = {
     name: 'stop',
     symbol: '⏹',
+    category: 'basic',
     description: 'Stops playing songs.',
     execute(message) {
         const queue = message.client.queues.get(message.guild.id);

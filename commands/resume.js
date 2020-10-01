@@ -3,6 +3,7 @@ const { MessageEmbed } = require("discord.js");
 module.exports = {
 	name: 'resume',
 	symbol: '▶',
+	category: 'basic',
 	description: 'Resume the current song.',
 	execute(message) {
 		const queue = message.client.queues.get(message.guild.id);

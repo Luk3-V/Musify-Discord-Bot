@@ -3,6 +3,7 @@ const { MessageEmbed } = require("discord.js");
 module.exports = {
     name: 'clear',
     symbol: '💥',
+    category: 'basic',
     description: 'Clears songs in queue.',
     execute(message) {
         const queue = message.client.queues.get(message.guild.id);

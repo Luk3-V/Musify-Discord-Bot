@@ -1,6 +1,7 @@
 module.exports = {
     name: 'spotify',
-    symbol: 'test',
+    symbol: '🟢',
+    category: 'advanced',
     description: "ssss",
     execute(message) {
     	
@@ -8,5 +9,7 @@ module.exports = {
 };
 
 // TODO: 
-// spotify connect
-// spotify disconnect
+// spotify login
+// spotify logout
+// spotify genres
+// 

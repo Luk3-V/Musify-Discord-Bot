@@ -13,6 +13,7 @@ module.exports = {
 	name: 'play',
 	aliases: ['p'],
 	symbol: '🎶',
+	category: 'basic',
 	description: 'Plays a song given YouTube link or video name.',
 	async execute(message, args) {
 		const voiceChannel = message.member.voice.channel;

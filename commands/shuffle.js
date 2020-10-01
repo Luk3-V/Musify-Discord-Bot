@@ -3,6 +3,7 @@
 module.exports = {
     name: 'shuffle',
     symbol: '🔀',
+    category: 'basic',
     description: "Shuffle queue.",
     execute(message) {
         const queue = message.client.queues.get(message.guild.id);

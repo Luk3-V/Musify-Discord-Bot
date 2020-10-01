@@ -11,6 +11,7 @@ module.exports = {
     name: 'album',
     aliases: ['al'],
     symbol: '💽',
+    category: 'advanced',
     description: "Play album from Spotify.",
     async execute(message, args) {
     	const voiceChannel = message.member.voice.channel;
@@ -103,5 +104,3 @@ module.exports = {
 		message.channel.send(albumEmbed).catch(console.error);
     }
 };
-
-// album <name>

@@ -4,6 +4,7 @@ module.exports = {
     name: 'volume',
     aliases: ['v'],
     symbol: '🔊',
+    category: 'basic',
     description: "Edit or view volume.",
     execute(message, args) {
         const queue = message.client.queues.get(message.guild.id);

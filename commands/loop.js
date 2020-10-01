@@ -1,6 +1,7 @@
 module.exports = {
     name: "loop",
     symbol: '🔁',
+    category: 'basic',
     description: "Toggle loop option.",
     execute(message, args) {
         const queue = message.client.queues.get(message.guild.id);

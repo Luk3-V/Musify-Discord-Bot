@@ -15,6 +15,7 @@ module.exports = {
     name: 'playlist',
     aliases: ['pl'],
     symbol: '🎶',
+    category: 'advanced',
     description: "Play a playlist from Youtube URL, from artist's top songs, from recommended songs, or from Spotify.",
     async execute(message, args) {
     	const voiceChannel = message.member.voice.channel;
@@ -145,6 +146,3 @@ module.exports = {
 		message.channel.send(playlistEmbed).catch(console.error);   
     }
 };
-
-// TODO: 
-// playlist size <1-20>

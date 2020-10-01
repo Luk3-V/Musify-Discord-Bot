@@ -4,6 +4,7 @@ module.exports = {
     name: 'autoplay',
     aliases: ['auto'],
     symbol: '♾️',
+    category: 'advanced',
     description: 'Toggle autoplay option.',
     async execute(message, args) {
         const queue = message.client.queues.get(message.guild.id);

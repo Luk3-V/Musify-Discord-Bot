@@ -3,6 +3,7 @@
 module.exports = {
     name: 'remove',
     symbol: '❌',
+    category: 'basic',
     description: "Remove song from the queue.",
     execute(message, args) {
         const queue = message.client.queues.get(message.guild.id);
