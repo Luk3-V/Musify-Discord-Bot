@@ -9,6 +9,8 @@ module.exports = {
         const queue = message.client.queues.get(message.guild.id);
         if(!queue) 
             return message.channel.send(`No songs in queue (${message.author})`).catch(console.error);
+        if(queue.auto) 
+            return message.channel.send(`Can't shuffle autoplay (${message.author})`).catch(console.error);
 
         let songs = queue.songs;
         for (let i = songs.length - 1; i > 1; i--) {

@@ -72,7 +72,7 @@ module.exports = {
 		    params = params[1].split(/ *, */);
 
 			if(params.length > 6) {
-				return message.channel.send(`**Too many arguements, please enter 5 or less** (${message.author})`);
+				return message.channel.send(`**Too many \`${type}\` arguements, please enter 5 or less** (${message.author})`);
 			} else if(args[0] == 'create') {	
 		    	[songs, title] = await createPlaylist(params, MAX_PLAYLIST_SIZE);
 		    	playlistEmbed.setTitle(title);

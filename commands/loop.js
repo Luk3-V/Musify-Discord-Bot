@@ -5,8 +5,10 @@ module.exports = {
     description: "Toggle loop option.",
     execute(message, args) {
         const queue = message.client.queues.get(message.guild.id);
-        if (!queue) 
+        if(!queue) 
             return message.channel.send(`No songs in queue (${message.author})`).catch(console.error);
+        if(queue.auto) 
+            return message.channel.send(`Can't loop autoplay (${message.author})`).catch(console.error);
 
         if(!args.length) {
             queue.loop = !queue.loop;
