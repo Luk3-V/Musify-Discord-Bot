@@ -5,7 +5,6 @@ module.exports = {
     category: 'basic',
     description: "Change command prefix.",
     execute(message, args) {
-        var val = parseInt(args[0]);
         if(!args.length)
             return message.channel.send(`**Usage:** \`${message.client.prefix}prefix <PREFIX>\` (${message.author})`).catch(console.error);
 
