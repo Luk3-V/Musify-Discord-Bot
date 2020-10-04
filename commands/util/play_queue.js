@@ -12,22 +12,29 @@ module.exports = {
 	async playQueue(message) {
     	const queue = message.client.queues.get(message.guild.id);
 
-    	if(!queue.songs.length) { // Queue empty
+		if(queue.seek) { // Seek
+    		console.log(`[${message.guild.id}] SEEK ${queue.seek}`);
+    		queue.seek = false;
+    		queue.playing = true;
+    	} 
+    	else if(!queue.songs.length) { 
     		if(message.client.autoplay && queue.autoSongs.length) { // Autoplay
     			queue.current = queue.autoSongs.shift();
     			queue.auto = true;
-    		} else {
+    		} 
+    		else { // Stop
     			queue.voiceChannel.leave();
 				message.client.queues.delete(message.guild.id);
 				return;
     		}
-    	} else {
+    	} 
+    	else { // Next
     		queue.current = queue.songs.shift();
     		queue.auto = false;
     		queue.autoSongs = [];
     	}
 
-    	try { // Load Song		
+    	try {		
     		if(queue.auto) { // Load Autoplay Song
     			console.log(`[${message.guild.id}] LOAD INFO`);
     			let searches;
@@ -41,18 +48,18 @@ module.exports = {
 				queue.current = queueObject.songs[0];
     		}
 
-    		let stream = null;
-    		let streamType = queue.current.url.includes('youtube.com') ? 'opus' : 'ogg/opus';
-
-    		console.log(`[${message.guild.id}] LOAD FILE`);
 			if(queue.current.url.includes('youtube.com')) {
-				stream = await ytdlDiscord(queue.current.url, { highWaterMark: 1 << 25 });
+				console.log(`[${message.guild.id}] LOAD FILE`);
+				//queue.current.stream = await ytdlDiscord(queue.current.url, { highWaterMark: 1 << 25 });
+				queue.current.stream = ytdl(queue.current.url, { highWaterMark: 1 << 25 });
 			}
 
+    		let streamType = queue.current.url.includes('youtube.com') ? 'opus' : 'ogg/opus';
 			queue.connection.on('disconnect', () => message.client.queues.delete(message.guild.id));
+
 			console.log(`[${message.guild.id}] PLAY`);
-	    	const dispatcher = queue.connection.play(stream, { type: streamType });
-	    	
+	    	const dispatcher = queue.connection.play(queue.current.stream, { seek: queue.current.seekTime });	 
+
 	    	dispatcher.on('start', async () => { 
 	    		if(message.client.autoplay) { // Create new autoplay queue
 	    			if(queue.auto && queue.autoSongs.length < 3)
@@ -61,13 +68,12 @@ module.exports = {
 	    				loadAutoplay(queue.current, message);
 	    		}
 			});
-	    	dispatcher.on('finish', () => { // Loop or play next song
-	    		if(!queue.auto) {
+	    	dispatcher.on('finish', () => { // Seek, loop, or play next song
+	    		if(!queue.seek && !queue.auto) {
 	    			queue.previous = queue.current;
-	    		}
-	    		if(queue.loop) {
-					queue.songs.push(queue.current);
-				}
+		    		if(queue.loop) 
+						queue.songs.push(queue.current);
+				} 
 				module.exports.playQueue(message);
 			});
 			dispatcher.on('error', (err) => { // Error & skip song
@@ -76,8 +82,8 @@ module.exports = {
 				module.exports.playQueue(message);
 			});
 			dispatcher.setVolumeLogarithmic(message.client.volume / 100);
-
-		} catch(error) { // Cant Load Song
+		} 
+		catch(error) { // Cant play/load song
 			console.error(`[${message.guild.id}] ${error}`);
 			message.channel.send(`⚠ **Error:** ${error.message ? error.message : error}`);
 

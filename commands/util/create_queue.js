@@ -1,3 +1,5 @@
+
+
 module.exports = {
 	async createQueue(songInfo, message, voiceChannel) {
 		const serverQueue = message.client.queues.get(message.guild.id);
@@ -9,6 +11,7 @@ module.exports = {
 			autoSongs: [],
 			current: null, 
 			previous: null,
+			seek: false,
 			auto: false,
 	    	loop: false,
 			playing: true
@@ -22,7 +25,9 @@ module.exports = {
 				image: e.videoDetails.thumbnail.thumbnails[0].url,
 				channel: e.videoDetails.author.name,
 				duration: e.videoDetails.lengthSeconds,
-				user: message.author 
+				user: message.author,
+				stream: null,
+				seekTime: 0
 			};
 			console.log(`[${message.guild.id}] QUEUED: ` + song.title + '  RESTRICTED=' + e.videoDetails.age_restricted);
 
