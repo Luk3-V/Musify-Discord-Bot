@@ -10,7 +10,7 @@ let config = {
 	SPOTIFY_SECRET: process.env.spotifySecret,
 	MAX_PLAYLIST_SIZE: '5',
 	PREFIX: '$',
-	VERSION: '0.2'
+	VERSION: '0.3'
 };
 let data = JSON.stringify(config, null, 2);
 fs.writeFileSync('config.json', data);
@@ -38,17 +38,17 @@ for(const file of commandFiles) {
 
 client.on('ready', () => {
 	console.log("Musify online! v" + VERSION);
-	client.user.setActivity(`${PREFIX}help`);
+	client.user.setActivity(`${client.prefix}help`);
 });
 
 client.on("error", console.error);
 
 client.on('message', message => {
 	const messageStr = message.content.trim();
-	if(!messageStr.startsWith(PREFIX) || message.author.bot) return;
+	if(!messageStr.startsWith(client.prefix) || message.author.bot) return;
 
-	const args = messageStr.substring(PREFIX.length).split(/ +/);
-	const command = client.commands.get(args.shift().toLowerCase()); 
+	const args = messageStr.substring(client.prefix.length).split(/ +/);
+	const command = client.commands.get(args.shift().toLowerCase().trim()); 
 
 	if(!command) return;
 
