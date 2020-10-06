@@ -1,9 +1,9 @@
-const { MAX_PLAYLIST_SIZE } = require("../../config.json");
-const { autoPlaylist } = require('../../spotify/auto_playlist.js');
+const { MAX_PLAYLIST_SIZE } = require("../config.json");
+const { autoPlaylist } = require('../spotify/auto_playlist.js');
 
 module.exports = {
 	async loadAutoplay(song, message) {
-		const serverQueue = message.client.queues.get(message.guild.id);
+		const server = message.client.servers.get(message.guild.id);
 
 		let playlist = [];
 		let songs;
@@ -16,8 +16,8 @@ module.exports = {
 	    	return;
 	    }
 
-	    serverQueue.autoSongs.push(...playlist);
-	    console.log(`[${message.guild.id}] AUTOPLAY SONGS:\n${serverQueue.autoSongs.map(e => '\t'+e[0]+' - '+e[1]).join('\n')}`);
+	    server.queue.autoSongs.push(...playlist);
+	    console.log(`[${message.guild.id}] AUTOPLAY SONGS:\n${server.queue.autoSongs.map(e => '\t'+e[0]+' - '+e[1]).join('\n')}`);
 
 	    return; 
 	}

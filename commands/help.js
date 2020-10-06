@@ -8,6 +8,7 @@ module.exports = {
     category: 'basic',
     description: "Display all commands and descriptions",
     execute(message) {
+        const server = message.client.servers.get(message.guild.id);
         let commands = message.client.commands.array();
 
         let basic = [];
@@ -24,7 +25,7 @@ module.exports = {
         let helpEmbed = new MessageEmbed()
             .setColor('#1DB954')
             .setTitle(`ℹ️  Commands (BETA v${VERSION})`)
-            .setDescription(`**Prefix: \`${message.client.prefix}\`**`)     
+            .setDescription(`**Prefix: \`${server.prefix}\`**`)     
             .addField('Basic:', basic.join(''), true)
             .addField('Advanced:', advanced.join(''), true)
             .setFooter(`\"${message.client.prefix}help <Command>\" for more info`);

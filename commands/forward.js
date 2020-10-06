@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const { createQueue } = require("./util/create_queue.js");
+const { createQueue } = require("../util/create_queue.js");
 
 module.exports = {
     name: 'forward',
@@ -8,7 +8,9 @@ module.exports = {
     category: 'basic',
     description: 'Fast-forward the current song.',
     execute(message, args) {
-        const queue = message.client.queues.get(message.guild.id);
+        const server = message.client.servers.get(message.guild.id);
+        const queue = server.queue;
+
         if(!queue) 
             return message.channel.send(`Nothing is playing (${message.author})`).catch(console.error);
 
@@ -29,7 +31,7 @@ module.exports = {
                 forward = mins*60 + secs;
             }
         } else {
-            return message.channel.send(`**Usage:** \`${message.client.prefix}forward <MM:SS | seconds>\` (${message.author})`).catch(console.error);
+            return message.channel.send(`**Usage:** \`${server.prefix}forward <MM:SS | seconds>\` (${message.author})`).catch(console.error);
         }
 
         if(forward >= remaining)

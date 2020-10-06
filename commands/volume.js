@@ -7,15 +7,16 @@ module.exports = {
     category: 'basic',
     description: "Edit or view volume.",
     execute(message, args) {
-        const queue = message.client.queues.get(message.guild.id);
+        const server = message.client.servers.get(message.guild.id);
+        const queue = server.queue;
 
         var val = parseInt(args[0]);
         if(!args.length) 
-            return message.channel.send(`🔊 **The current volume is:** \`${message.client.volume}%\``).catch(console.error);
+            return message.channel.send(`🔊 **The current volume is:** \`${server.volume}%\``).catch(console.error);
         if(isNaN(val) || val > 100 || val < 0 )
-            return message.channel.send(`**Usage:** \`${message.client.prefix}volume <Number between 1-100>\` (${message.author})`).catch(console.error);
+            return message.channel.send(`**Usage:** \`${server.prefix}volume <Number between 1-100>\` (${message.author})`).catch(console.error);
 
-        message.client.volume = val;
+        server.volume = val;
         if(queue)
             queue.connection.dispatcher.setVolumeLogarithmic(val / 100);
 

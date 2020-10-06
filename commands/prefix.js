@@ -5,11 +5,13 @@ module.exports = {
     category: 'basic',
     description: "Change command prefix.",
     execute(message, args) {
+        const server = message.client.servers.get(message.guild.id);
+
         if(!args.length)
-            return message.channel.send(`**Usage:** \`${message.client.prefix}prefix <PREFIX>\` (${message.author})`).catch(console.error);
+            return message.channel.send(`**Usage:** \`${server.prefix}prefix <PREFIX>\` (${message.author})`).catch(console.error);
 
-        message.client.prefix = args[0];
+        server.prefix = args[0];
 
-        return message.channel.send(`💬  **Prefix set to:** \`${message.client.prefix}%\``).catch(console.error);
+        return message.channel.send(`💬  **Prefix set to:** \`${server.prefix}%\``).catch(console.error);
     }
 };

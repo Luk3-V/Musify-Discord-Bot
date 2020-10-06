@@ -2,8 +2,8 @@ const { YOUTUBE_API_KEY, MAX_PLAYLIST_SIZE } = require("../config.json");
 const { createPlaylist } = require('../spotify/create_playlist.js');
 const { recommendPlaylist } = require('../spotify/recommend_playlist.js');
 const { searchPlaylist } = require('../spotify/search_playlist.js');
-const { playQueue } = require("./util/play_queue.js");
-const { createQueue } = require("./util/create_queue.js");
+const { playQueue } = require("../util/play_queue.js");
+const { createQueue } = require("../util/create_queue.js");
 const { MessageEmbed, escapeMarkdown } = require("discord.js");
 const ytdl = require("ytdl-core");
 const YouTubeAPI = require("simple-youtube-api");
@@ -18,15 +18,15 @@ module.exports = {
     category: 'advanced',
     description: "Play a playlist from Youtube URL, from artist's top songs, from recommended songs, or from Spotify.",
     async execute(message, args) {
+    	const server = message.client.servers.get(message.guild.id);
     	const voiceChannel = message.member.voice.channel;
-		const serverQueue = message.client.queues.get(message.guild.id);
 
     	// Error Handling
 
 		if(!voiceChannel) 
 			return message.channel.send(`**You need to join a voice channel first** (${message.author})`).catch(console.error);
 
-		if(serverQueue && voiceChannel !== message.guild.me.voice.channel) 
+		if(server.queue && voiceChannel !== message.guild.me.voice.channel) 
 			return message.channel.send(`**You must be in the same channel as** ${message.client.user} (${message.author})`).catch(console.error);
 
 	  	const permissions = voiceChannel.permissionsFor(message.client.user);
@@ -96,19 +96,19 @@ module.exports = {
 		}
 
 	    if(!playlist.length) {
-	    	return message.channel.send(`**Usage:** \`${message.client.prefix}playlist <Youtube URL>\`\n` +
-	    								`	**or** \`${message.client.prefix}playlist create artist=<Artist1, Artist2, ...>\`\n` +
-	    								`	**or** \`${message.client.prefix}playlist recommend song=<Song1, Song2, ...>\`\n` +
-	    								`	**or** \`${message.client.prefix}playlist recommend artist=<Artist1, Artist2, ...>\`\n` +
-	    								`	**or** \`${message.client.prefix}playlist recommend genre=<Genre1, Genre2, ...>\`\n` +
-	    								`	**or** \`${message.client.prefix}playlist search <Spotify Playlist>\` (${message.author})`).catch(console.error);
+	    	return message.channel.send(`**Usage:** \`${server.prefix}playlist <Youtube URL>\`\n` +
+	    								`	**or** \`${server.prefix}playlist create artist=<Artist1, Artist2, ...>\`\n` +
+	    								`	**or** \`${server.prefix}playlist recommend song=<Song1, Song2, ...>\`\n` +
+	    								`	**or** \`${server.prefix}playlist recommend artist=<Artist1, Artist2, ...>\`\n` +
+	    								`	**or** \`${server.prefix}playlist recommend genre=<Genre1, Genre2, ...>\`\n` +
+	    								`	**or** \`${server.prefix}playlist search <Spotify Playlist>\` (${message.author})`).catch(console.error);
 	    }
 
 	    // Queue Songs
 
 	    const queueObject = await createQueue(playlist, message, voiceChannel);
 
-		if(!serverQueue) {
+		if(!server.queue) {
 			message.client.queues.set(message.guild.id, queueObject);
 
 			try { 
@@ -117,12 +117,12 @@ module.exports = {
 				playQueue(message);
 		    } catch(error) {
 				console.error(`[${message.guild.id}] ${error}`);
-				message.client.queues.delete(message.guild.id);
+				server.queue = null;
 				await voiceChannel.leave();
 				return message.channel.send(`⚠ **Can't join channel:** ${error}`).catch(console.error);
 		    }
 		} else {
-			serverQueue.songs.push(...queueObject.songs);
+			server.queue.songs.push(...queueObject.songs);
 		}
 		
 		let songList = [];
@@ -141,8 +141,8 @@ module.exports = {
 		playlistEmbed
 			.addField('Songs:', songList)
 			.setThumbnail(playlist[0].videoDetails.thumbnail.thumbnails[0].url)
-			.setFooter(message.client.autoplay ? `Autoplay : ON` : `Autoplay : OFF`);
+			.setFooter(server.autoplay ? `Autoplay : ON` : `Autoplay : OFF`);
 
-		message.channel.send(playlistEmbed).catch(console.error);   
+		server.queue.textChannel.send(playlistEmbed).catch(console.error);   
     }
 };

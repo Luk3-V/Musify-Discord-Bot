@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const { loadAutoplay } = require('./util/load_autoplay.js');
+const { loadAutoplay } = require('../util/load_autoplay.js');
 
 module.exports = {
     name: 'skip',
@@ -8,7 +8,9 @@ module.exports = {
     category: 'basic',
     description: "Skip the current or multiple song(s).",
     async execute(message, args) {
-        const queue = message.client.queues.get(message.guild.id);
+        const server = message.client.servers.get(message.guild.id);
+        const queue = server.queue;
+
         if(!queue)
           return message.channel.send(`No songs in queue (${message.author})`).catch(console.error);
 
@@ -16,7 +18,7 @@ module.exports = {
         var val = parseInt(args[0]);
         if(args.length) {
             if(isNaN(val) || val < 1) {
-                return message.channel.send(`**Usage:** \`${message.client.prefix}${module.exports.name} <Optional: Number>\` (${message.author})`).catch(console.error);
+                return message.channel.send(`**Usage:** \`${server.prefix}skip <Optional: Number>\` (${message.author})`).catch(console.error);
             } else if(!queue.auto) {
                 if (val-1 > queue.songs.length) {
                     song += ` **&** \`${queue.songs.length}\` **song(s)**`;

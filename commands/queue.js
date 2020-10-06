@@ -7,7 +7,9 @@ module.exports = {
     category: 'basic',
     description: "Shows song queue and current song.",
     execute(message) {
-        const queue = message.client.queues.get(message.guild.id);
+        const server = message.client.servers.get(message.guild.id);
+        const queue = server.queue;
+        
         if (!queue) 
             return message.channel.send(`No songs in queue (${message.author})`).catch(console.error);
 

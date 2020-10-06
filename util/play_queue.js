@@ -1,4 +1,4 @@
-const { YOUTUBE_API_KEY } = require("../../config.json");
+const { YOUTUBE_API_KEY } = require("../config.json");
 const { createQueue } = require("./create_queue.js");
 const { loadAutoplay } = require('./load_autoplay.js');
 const ytdl = require("ytdl-core");
@@ -10,7 +10,8 @@ const english = /^[A-Za-z0-9]*$/;
 
 module.exports = {
 	async playQueue(message) {
-    	const queue = message.client.queues.get(message.guild.id);
+    	const server = message.client.servers.get(message.guild.id);
+    	const queue = server.queue;
 
 		if(queue.seek) { // Seek
     		console.log(`[${message.guild.id}] SEEK ${queue.seek}`);
@@ -18,7 +19,7 @@ module.exports = {
     		queue.playing = true;
     	} 
     	else if(!queue.songs.length) { 
-    		if(message.client.autoplay && queue.autoSongs.length) { // Autoplay
+    		if(server.autoplay && queue.autoSongs.length) { // Autoplay
     			queue.current = queue.autoSongs.shift();
     			queue.auto = true;
     		} 
@@ -55,7 +56,7 @@ module.exports = {
 			}
 
     		let streamType = queue.current.url.includes('youtube.com') ? 'opus' : 'ogg/opus';
-			queue.connection.on('disconnect', () => message.client.queues.delete(message.guild.id));
+			queue.connection.on('disconnect', () => server.queue = null);
 
 			console.log(`[${message.guild.id}] PLAY`);
 	    	const dispatcher = queue.connection.play(queue.current.stream, { seek: queue.current.seekTime });	 
@@ -81,7 +82,7 @@ module.exports = {
 				message.channel.send(`⚠ **Error:** ${err.message ? err.message : err}`);
 				module.exports.playQueue(message);
 			});
-			dispatcher.setVolumeLogarithmic(message.client.volume / 100);
+			dispatcher.setVolumeLogarithmic(server.volume / 100);
 		} 
 		catch(error) { // Cant play/load song
 			console.error(`[${message.guild.id}] ${error}`);

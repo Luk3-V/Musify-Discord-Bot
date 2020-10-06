@@ -1,6 +1,6 @@
 const { YOUTUBE_API_KEY } = require("../config.json");
-const { playQueue } = require("./util/play_queue.js");
-const { createQueue } = require("./util/create_queue.js");
+const { playQueue } = require("../util/play_queue.js");
+const { createQueue } = require("../util/create_queue.js");
 const { MessageEmbed } = require("discord.js");
 const ytdl = require("ytdl-core");
 const YouTubeAPI = require("simple-youtube-api");
@@ -16,8 +16,8 @@ module.exports = {
 	category: 'basic',
 	description: 'Plays a song given YouTube link or video name.',
 	async execute(message, args) {
+		const server = message.client.servers.get(message.guild.id);
 		const voiceChannel = message.member.voice.channel;
-		const serverQueue = message.client.queues.get(message.guild.id);
 
 		// Error Handling
 
@@ -25,12 +25,12 @@ module.exports = {
 			return message.channel.send(`**You need to join a voice channel first** (${message.author})`)
 				.catch(console.error);
 
-		if(serverQueue && voiceChannel !== message.guild.me.voice.channel) 
+		if(server.queue && voiceChannel !== message.guild.me.voice.channel) 
 			return message.channel.send(`**You must be in the same channel as** ${message.client.user} (${message.author})`)
 				.catch(console.error);
 
 		if(!args.length)
-	    	return message.channel.send(`**Usage:** \`${message.client.prefix}play <YouTube URL | Video Name>\` (${message.author})`)
+	    	return message.channel.send(`**Usage:** \`${server.prefix}play <YouTube URL | Video Name>\` (${message.author})`)
 	  			.catch(console.error);
 
 	  	const permissions = voiceChannel.permissionsFor(message.client.user);
@@ -69,8 +69,8 @@ module.exports = {
 	   	const queueObject = await createQueue([songInfo], message, voiceChannel);
 	   	const song = queueObject.songs[0];
 
-	    if(serverQueue) { // Queue already exists
-	    	serverQueue.songs.push(song);
+	    if(server.queue) { // Queue already exists
+	    	server.queue.songs.push(song);
 
 	    	let songEmbed = new MessageEmbed()
                 .setColor('#1DB954')
@@ -79,12 +79,12 @@ module.exports = {
                 .setDescription(`[**${song.title}**](${song.url})`)
                 .addField('Channel:', song.channel, true)
                 .addField('Duration:', (song.duration == 0 ? " ◉ LIVE" : new Date(song.duration * 1000).toISOString().substr(11, 8).replace(/^(0|:){1,4}/, '')), true)
-                .setFooter(message.client.autoplay ? `Autoplay : ON` : `Autoplay : OFF`);
+                .setFooter(server.autoplay ? `Autoplay : ON` : `Autoplay : OFF`);
 
-            return serverQueue.textChannel.send(songEmbed).catch(console.error);
+            return server.queue.textChannel.send(songEmbed).catch(console.error);
 	    }
 
-    	message.client.queues.set(message.guild.id, queueObject);
+    	server.queue = queueObject;
 
     	try { // Join & start queue
 			queueObject.connection = await voiceChannel.join();
@@ -97,12 +97,12 @@ module.exports = {
                 .setDescription(`[**${song.title}**](${song.url})`)
                 .addField('Channel:', song.channel, true)
                 .addField('Duration:', (song.duration == 0 ? " ◉ LIVE" : new Date(song.duration * 1000).toISOString().substr(11, 8).replace(/^(0|:){1,4}/, '')), true)
-               	.setFooter(message.client.autoplay ? `Autoplay : ON` : `Autoplay : OFF`);
+               	.setFooter(server.autoplay ? `Autoplay : ON` : `Autoplay : OFF`);
 
             message.channel.send(songEmbed).catch(console.error);
 	    } catch(error) {
 			console.error(`[${message.guild.id}] ${error}`);
-			message.client.queues.delete(message.guild.id);
+			server.queue = null;
 			await voiceChannel.leave();
 			return message.channel.send(`⚠ **Can't join channel:** ${error}`).catch(console.error);
 	    }

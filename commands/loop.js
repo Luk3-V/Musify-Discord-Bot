@@ -4,7 +4,9 @@ module.exports = {
     category: 'basic',
     description: "Toggle loop option.",
     execute(message, args) {
-        const queue = message.client.queues.get(message.guild.id);
+        const server = message.client.servers.get(message.guild.id);
+        const queue = server.queue;
+
         if(!queue) 
             return message.channel.send(`No songs in queue (${message.author})`).catch(console.error);
         if(queue.auto) 
@@ -13,11 +15,11 @@ module.exports = {
         if(!args.length) {
             queue.loop = !queue.loop;
         } else if(args[0].toLowerCase() == 'on') {
-            message.client.autoplay = true;
+            server.autoplay = true;
         } else if(args[0].toLowerCase() == 'off') {
-            message.client.autoplay = false;
+            server.autoplay = false;
         } else {
-            return message.channel.send(`**Usage:** \`${message.client.prefix}loop <on | off>\` ${message.author}`).catch(console.error);
+            return message.channel.send(`**Usage:** \`${server.prefix}loop <on | off>\` ${message.author}`).catch(console.error);
         }
 
         return queue.textChannel.send(`🔁 **Loop turned** \`${queue.loop ? "ON" : "OFF"}\``).catch(console.error);

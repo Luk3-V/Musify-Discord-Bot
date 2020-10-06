@@ -6,7 +6,9 @@ module.exports = {
     category: 'basic',
     description: "Shuffle queue.",
     execute(message) {
-        const queue = message.client.queues.get(message.guild.id);
+        const server = message.client.servers.get(message.guild.id);
+        const queue = server.queue;
+
         if(!queue) 
             return message.channel.send(`No songs in queue (${message.author})`).catch(console.error);
         if(queue.auto) 
@@ -18,7 +20,7 @@ module.exports = {
             [songs[i], songs[j]] = [songs[j], songs[i]];
         }
         queue.songs = songs;
-        message.client.queues.set(message.guild.id, queue);
+        server.queue = queue;
         queue.textChannel.send(`🔀 **Shuffled**`).catch(console.error);
     }
 };

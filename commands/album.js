@@ -1,7 +1,7 @@
 const { YOUTUBE_API_KEY, MAX_PLAYLIST_SIZE } = require("../config.json");
 const { searchAlbum } = require('../spotify/search_album.js');
-const { playQueue } = require("./util/play_queue.js");
-const { createQueue } = require("./util/create_queue.js");
+const { playQueue } = require("../util/play_queue.js");
+const { createQueue } = require("../util/create_queue.js");
 const { MessageEmbed, escapeMarkdown } = require("discord.js");
 const ytdl = require("ytdl-core");
 const YouTubeAPI = require("simple-youtube-api");
@@ -14,19 +14,19 @@ module.exports = {
     category: 'advanced',
     description: "Play album from Spotify.",
     async execute(message, args) {
+    	const server = message.client.servers.get(message.guild.id);
     	const voiceChannel = message.member.voice.channel;
-		const serverQueue = message.client.queues.get(message.guild.id);
 
     	// Error Handling
 
 		if(!voiceChannel) 
 			return message.channel.send(`**You need to join a voice channel first** (${message.author})`).catch(console.error);
 
-		if(serverQueue && voiceChannel !== message.guild.me.voice.channel) 
+		if(server.queue && voiceChannel !== message.guild.me.voice.channel) 
 			return message.channel.send(`**You must be in the same channel as** ${message.client.user} (${message.author})`).catch(console.error);
 
 		if(!args.length)
-	    	return message.channel.send(`**Usage:** \`${message.client.prefix}album <Ablum Name>\` (${message.author})`).catch(console.error);
+	    	return message.channel.send(`**Usage:** \`${server.prefix}album <Ablum Name>\` (${message.author})`).catch(console.error);
 
 	  	const permissions = voiceChannel.permissionsFor(message.client.user);
 	    if(!permissions.has("CONNECT"))
@@ -66,8 +66,8 @@ module.exports = {
 
 	    const queueObject = await createQueue(playlist, message, voiceChannel);
 
-		if(!serverQueue) {
-			message.client.queues.set(message.guild.id, queueObject);
+		if(!server.queue) {
+			server.queue = queueObject;
 
 			try { 
 				queueObject.connection = await voiceChannel.join();
@@ -75,12 +75,12 @@ module.exports = {
 				playQueue(message);
 		    } catch(error) {
 				console.error(`[${message.guild.id}] ${error}`);
-				message.client.queues.delete(message.guild.id);
+				server.queue = null;
 				await voiceChannel.leave();
 				return message.channel.send(`⚠ **Can't join channel:** ${error}`).catch(console.error);
 		    }
 		} else {
-			serverQueue.songs.push(...queueObject.songs);
+			server.queue.songs.push(...queueObject.songs);
 		}
 		
 		let songList = [];
@@ -101,6 +101,6 @@ module.exports = {
 			.setThumbnail(playlist[0].videoDetails.thumbnail.thumbnails[0].url)
 			.setFooter(message.client.autoplay ? `Autoplay : ON` : `Autoplay : OFF`);
 
-		message.channel.send(albumEmbed).catch(console.error);
+		server.queue.textChannel.send(albumEmbed).catch(console.error);
     }
 };

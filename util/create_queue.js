@@ -2,7 +2,7 @@
 
 module.exports = {
 	async createQueue(songInfo, message, voiceChannel) {
-		const serverQueue = message.client.queues.get(message.guild.id);
+		const server = message.client.servers.get(message.guild.id);
 	    const queueObject = {
 			textChannel: message.channel,
 			voiceChannel,

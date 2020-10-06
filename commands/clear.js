@@ -6,7 +6,8 @@ module.exports = {
     category: 'basic',
     description: 'Clears songs in queue.',
     execute(message) {
-        const queue = message.client.queues.get(message.guild.id);
+        const server = message.client.servers.get(message.guild.id);
+        const queue = server.queue;
 
         if (!queue) 
             return message.channel.send(`Nothing is playing (${message.author})`).catch(console.error);
