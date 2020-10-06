@@ -6,10 +6,13 @@ module.exports = {
 	category: 'basic',
 	description: 'Resume the current song.',
 	execute(message) {
-		const queue = message.client.queues.get(message.guild.id);
+		const server = message.client.servers.get(message.guild.id);
+		const queue = server.queue;
+
 		if (!queue || queue.playing) 
 			return message.channel.send(`Nothing is paused (${message.author})`).catch(console.error);
 
+		clearTimeout(server.timer);
 		queue.playing = true;
 		queue.connection.dispatcher.resume();
 		

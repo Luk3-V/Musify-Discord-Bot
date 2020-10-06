@@ -1,4 +1,5 @@
 const { MessageEmbed } = require("discord.js");
+const { waitTimer } = require("../util/wait_timer.js");
 
 module.exports = {
     name: 'pause',
@@ -6,10 +7,13 @@ module.exports = {
     category: 'basic',
     description: 'Pause the current song.',
     execute(message) {
-        const queue = message.client.queues.get(message.guild.id);
+        const server = message.client.servers.get(message.guild.id);
+        const queue = server.queue;
+
         if(!queue || !queue.playing) 
             return message.channel.send(`Nothing is playing (${message.author})`).catch(console.error);
 
+        waitTimer(server, 60);
         queue.playing = false;
         queue.connection.dispatcher.pause(true);
 
