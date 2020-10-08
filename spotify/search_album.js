@@ -4,14 +4,14 @@ const spotify = new SpotifyAPI();
 let OAuth = 'ACCESS TOKEN';
 
 module.exports = {
-	async searchAlbum(args, size) {
+	async searchAlbum(search, size) {
 		let result = [];
 		let title = [];
 
 		OAuth = await createToken();	
 		spotify.setAccessToken(OAuth);
 
-		let album = await spotify.searchAlbums(args, {limit: 1});
+		let album = await spotify.searchAlbums(search, {limit: 1});
 			album = album.body.albums.items[0];
 		let songs = await spotify.getAlbumTracks(album.id, {limit: size});
 			
