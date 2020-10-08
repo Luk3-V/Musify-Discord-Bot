@@ -45,7 +45,7 @@ client.on('message', message => {
 	if(!server) {
 		console.log(`[${message.guild.id}] JOINED`);
 	    newSettings(client.servers, message.guild);
-	    server = client.servers.get(newState.guild.id);
+	    server = client.servers.get(message.guild.id);
 	} else if(!server.guild) {
 		server.guild = message.guild;
 	}
