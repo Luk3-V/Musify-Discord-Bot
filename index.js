@@ -1,31 +1,16 @@
-
-// Load Config
-
-const fs = require('fs');
-
-let config = { 
-    TOKEN: process.env.token,
-	YOUTUBE_API_KEY: process.env.ytAPIKey,
-	SPOTIFY_ID: process.env.spotifyID,
-	SPOTIFY_SECRET: process.env.spotifySecret,
-	MAX_PLAYLIST_SIZE: '5',
-	PREFIX: '$',
-	VERSION: '0.3'
-};
-let data = JSON.stringify(config, null, 2);
-fs.writeFileSync('config.json', data);
-
-// Main
+const { loadConfig } = require("./util/load_config.js");
+loadConfig(process.env);
 
 const { Client, Collection } = require('discord.js');
 const { readdirSync } = require('fs');
-const { TOKEN, PREFIX, VERSION } = require('./config.json');
 const { waitTimer } = require("./util/wait_timer.js");
+const { newSettings, saveSettings, getSettings } = require("./util/settings.js");
+const config = require('./config.json');
 
 const client = new Client();
 client.options.http.api = 'https://discord.com/api';
 client.commands = new Collection();
-client.servers = new Map();
+client.servers = getSettings();
 
 const commandFiles = readdirSync('./commands/').filter(file => file.endsWith('.js'));
 for(const file of commandFiles) {
@@ -35,46 +20,48 @@ for(const file of commandFiles) {
 
 
 client.on('ready', () => {
-	console.log("Musify online! v" + VERSION);
-	client.user.setActivity(`${client.prefix}help`);
+	client.user.setActivity(`${config.PREFIX}help`);
+	console.log("Musify online! v" + config.VERSION);
+});
+client.on("disconnect", function(event){
+	saveSettings(client.servers);
+    console.log(`Musify Offline!`);
 });
 client.on("error", console.error);
 
+
 client.on("guildCreate", function(guild){
-	console.log(`[${guild.id} JOIN]`);
-    client.servers.set(guild.id, {
-    	guild,
-    	queue: null,
-    	timer: null,
-    	prefix: PREFIX,
-		volume: 100,
-		autoplay: true
-    });
+	console.log(`[${guild.id}] JOINED`);
+	newSettings(client.servers, guild);
 });
 client.on("guildDelete", function(guild){
-    console.log(`[${guild.id} GUILD REMOVED]`);
+    console.log(`[${guild.id}] GUILD REMOVED`);
     client.servers.delete(guild.id);
 });
 
+
 client.on('message', message => {
-	if(!client.servers.get(message.guild.id)) {
-		console.log(`[${message.guild.id} JOIN]`);
-	    client.servers.set(message.guild.id, {
-	    	guild: message.guild,
-	    	queue: null,
-	    	timer: null,
-	    	prefix: PREFIX,
-			volume: 100,
-			autoplay: true
-	    });
+	let server = client.servers.get(message.guild.id);
+	if(!server) {
+		console.log(`[${message.guild.id}] JOINED`);
+	    newSettings(client.servers, message.guild);
+	    server = client.servers.get(newState.guild.id);
+	} else if(!server.guild) {
+		server.guild = message.guild;
 	}
-	const server = client.servers.get(message.guild.id);
 
 	const messageStr = message.content.trim();
+	if(messageStr.startsWith(config.PREFIX + 'help')) // HELP USING OLD PREFIX
+		return message.channel.send(`**Prefix changed! Use:** \`${server.prefix}help\`(${message.author})`).catch(console.error);
 	if(!messageStr.startsWith(server.prefix) || message.author.bot) return;
 
 	const args = messageStr.substring(server.prefix.length).split(/ +/);
-	const command = client.commands.get(args.shift().toLowerCase().trim()); 
+	const commandStr = args.shift().toLowerCase().trim();
+	const command = client.commands.get(commandStr); 
+
+	if(commandStr === 'save') { // TEMPORARY SAVE SERVER SETTINGS
+		saveSettings(client.servers);
+	}
 
 	if(!command) return;
 
@@ -87,11 +74,19 @@ client.on('message', message => {
 });
 
 client.on('voiceStateUpdate', (oldState, newState) => {
-	const server = client.servers.get(newState.guild.id);
+	let server = client.servers.get(newState.guild.id);
+	if(!server) {
+		console.log(`[${newState.guild.id}] JOINED`);
+	    newSettings(client.servers, newState.guild);
+	    server = client.servers.get(newState.guild.id);
+	} else if(!server.guild) {
+		server.guild = newState.guild;
+	}
+
 	const oldChannel = oldState.channel;
 	const newChannel = newState.channel;
 	
-	if(!oldChannel && newChannel) { // User Joins a voice channel
+	if(!oldChannel && newChannel) { // User joins a voice channel
 		if(server.queue && !server.queue.playing && newChannel === newChannel.guild.me.voice.channel && newChannel.members.size > 1) {
 			clearTimeout(server.timer);
 			server.queue.playing = true;
@@ -106,4 +101,5 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 	}
 });
 
-client.login(TOKEN);
+
+client.login(config.TOKEN);
