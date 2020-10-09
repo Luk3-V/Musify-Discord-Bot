@@ -6,7 +6,8 @@ module.exports = {
     aliases: ['s'],
     symbol: '⏭',
     category: 'basic',
-    description: "Skip the current or multiple song(s).",
+    description: "Skip the current song or multiple songs.",
+    usage: ['skip', 'skip <Number>'],
     async execute(message, args) {
         const server = message.client.servers.get(message.guild.id);
         const queue = server.queue;

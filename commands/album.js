@@ -13,6 +13,7 @@ module.exports = {
     symbol: '💽',
     category: 'advanced',
     description: "Play album from Spotify.",
+    usage: ['album <Album Name>'],
     async execute(message, args) {
     	const server = message.client.servers.get(message.guild.id);
     	const voiceChannel = message.member.voice.channel;

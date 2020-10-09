@@ -5,6 +5,7 @@ module.exports = {
     symbol: '💥',
     category: 'basic',
     description: 'Clears songs in queue.',
+    usage: ['clear'],
     execute(message) {
         const server = message.client.servers.get(message.guild.id);
         const queue = server.queue;

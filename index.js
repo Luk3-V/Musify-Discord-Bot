@@ -56,7 +56,7 @@ client.on('message', message => {
 	if(!messageStr.startsWith(server.prefix) || message.author.bot) return;
 
 	const args = messageStr.substring(server.prefix.length).split(/ +/);
-	const commandStr = args.shift().toLowerCase().trim();
+	const commandStr = args.shift().toLowerCase();
 	const command = client.commands.get(commandStr); 
 
 	if(commandStr === 'save') { // TEMPORARY SAVE SERVER SETTINGS

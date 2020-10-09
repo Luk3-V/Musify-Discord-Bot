@@ -16,7 +16,9 @@ module.exports = {
     aliases: ['pl'],
     symbol: '🎶',
     category: 'advanced',
-    description: "Play a playlist from Youtube URL, from artist's top songs, from recommended songs, or from Spotify.",
+    description: "Play a playlist from Youtube URL, Spotify URL, artist's top songs, recommended songs, or Spotify search.",
+    usage: ['playlist <URL>', 'playlist search <Spotify Playlist>', 'playlist create artist=[Artist1, Artist2, ...]', 'playlist recommend song=[Song1, Song2, ...]', 
+    'playlist recommend artist=[Artist1, Artist2, ...]', 'playlist recommend genre=[Genre1, Genre2, ...]'],
     async execute(message, args) {
     	const server = message.client.servers.get(message.guild.id);
     	const voiceChannel = message.member.voice.channel;
@@ -97,11 +99,11 @@ module.exports = {
 
 	    if(!playlist.length) {
 	    	return message.channel.send(`**Usage:** \`${server.prefix}playlist <Youtube URL>\`\n` +
-	    								`	**or** \`${server.prefix}playlist create artist=<Artist1, Artist2, ...>\`\n` +
-	    								`	**or** \`${server.prefix}playlist recommend song=<Song1, Song2, ...>\`\n` +
-	    								`	**or** \`${server.prefix}playlist recommend artist=<Artist1, Artist2, ...>\`\n` +
-	    								`	**or** \`${server.prefix}playlist recommend genre=<Genre1, Genre2, ...>\`\n` +
-	    								`	**or** \`${server.prefix}playlist search <Spotify Playlist>\` (${message.author})`).catch(console.error);
+	    								`	**or** \`${server.prefix}playlist search <Spotify Playlist>\`` +
+	    								`	**or** \`${server.prefix}playlist create artist=[Artist1, Artist2, ...]\`\n` +
+	    								`	**or** \`${server.prefix}playlist recommend song=[Song1, Song2, ...]\`\n` +
+	    								`	**or** \`${server.prefix}playlist recommend artist=[Artist1, Artist2, ...]\`\n` +
+	    								`	**or** \`${server.prefix}playlist recommend genre=[Genre1, Genre2, ...]\`\n (${message.author})`).catch(console.error);
 	    }
 
 	    // Queue Songs

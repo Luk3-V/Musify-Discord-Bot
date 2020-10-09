@@ -1,14 +1,14 @@
 module.exports = {
     name: 'prefix',
-    aliases: [],
     symbol: '💬',
     category: 'basic',
     description: "Change command prefix.",
+    usage: ['prefix <Prefix>'],
     execute(message, args) {
         const server = message.client.servers.get(message.guild.id);
 
         if(!args.length)
-            return message.channel.send(`**Usage:** \`${server.prefix}prefix <PREFIX>\` (${message.author})`).catch(console.error);
+            return message.channel.send(`**Usage:** \`${server.prefix}prefix <Prefix>\` (${message.author})`).catch(console.error);
 
         server.prefix = args[0];
 

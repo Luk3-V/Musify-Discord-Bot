@@ -5,7 +5,8 @@ module.exports = {
     aliases: ['auto'],
     symbol: '♾️',
     category: 'advanced',
-    description: 'Toggle autoplay option.',
+    description: 'Toggle autoplay option. (Autoplay continues to play music related last song played by user)',
+    usage: ['autoplay', 'autoplay <on | off>'],
     async execute(message, args) {
         const server = message.client.servers.get(message.guild.id);
         const queue = server.queue;

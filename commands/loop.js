@@ -2,7 +2,8 @@ module.exports = {
     name: "loop",
     symbol: '🔁',
     category: 'basic',
-    description: "Toggle loop option.",
+    description: "Toggle loop option. (Loop will repeatedly play the songs in queue)",
+    usage: ['loop', 'loop <on | off>'],
     execute(message, args) {
         const server = message.client.servers.get(message.guild.id);
         const queue = server.queue;

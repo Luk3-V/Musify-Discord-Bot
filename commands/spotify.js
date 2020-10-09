@@ -2,7 +2,8 @@ module.exports = {
     name: 'spotify',
     symbol: '🟢',
     category: 'advanced',
-    description: "ssss",
+    description: "Coming Soon!",
+    usage: ['spotify'],
     execute(message) {
     	
     }

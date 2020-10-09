@@ -6,6 +6,7 @@ module.exports = {
     symbol: '📑',
     category: 'basic',
     description: "Shows song queue and current song.",
+    usage: ['queue'],
     execute(message) {
         const server = message.client.servers.get(message.guild.id);
         const queue = server.queue;

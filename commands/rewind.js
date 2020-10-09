@@ -7,6 +7,7 @@ module.exports = {
     symbol: '⏪',
     category: 'basic',
     description: 'Rewind the current song.',
+    usage: ['rewind <MM:SS | Seconds>'],
     execute(message, args) {
         const server = message.client.servers.get(message.guild.id);
         const queue = server.queue;
@@ -30,7 +31,7 @@ module.exports = {
                 rewind = mins*60 + secs;
             }
         } else {
-            return message.channel.send(`**Usage:** \`${server.prefix}rewind <MM:SS | seconds>\` (${message.author})`).catch(console.error);
+            return message.channel.send(`**Usage:** \`${server.prefix}rewind <MM:SS | Seconds>\` (${message.author})`).catch(console.error);
         }
 
         if(rewind >= time)

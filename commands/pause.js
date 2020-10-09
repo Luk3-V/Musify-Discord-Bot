@@ -6,6 +6,7 @@ module.exports = {
     symbol: '⏸',
     category: 'basic',
     description: 'Pause the current song.',
+    usage: ['pause'],
     execute(message) {
         const server = message.client.servers.get(message.guild.id);
         const queue = server.queue;

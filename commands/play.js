@@ -16,7 +16,8 @@ module.exports = {
 	aliases: ['p'],
 	symbol: '🎶',
 	category: 'basic',
-	description: 'Plays a song given YouTube link, Spotify link, or video name.',
+	description: 'Plays a song or playlist given YouTube URL, Spotify URL, or video name.',
+	usage: ['play <URL | Video Name>'],
 	async execute(message, args) {
 		const server = message.client.servers.get(message.guild.id);
 		const voiceChannel = message.member.voice.channel;
@@ -32,8 +33,8 @@ module.exports = {
 				.catch(console.error);
 
 		if(!args.length)
-	    	return message.channel.send(`**Usage:** \`${server.prefix}play <YouTube URL | Video Name>\`\n` +
-	    								`	**or** \`${server.prefix}play <Spotify URL>\` (${message.author})`).catch(console.error);
+	    	return message.channel.send(`**Usage:** \`${server.prefix}play <YouTube URL | Spotify URL>\`\n` +
+	    								`	**or** \`${server.prefix}play <Video Name>\` (${message.author})`).catch(console.error);
 
 	  	const permissions = voiceChannel.permissionsFor(message.client.user);
 	    if(!permissions.has("CONNECT"))

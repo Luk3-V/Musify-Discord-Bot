@@ -7,6 +7,7 @@ module.exports = {
     symbol: '⏩',
     category: 'basic',
     description: 'Fast-forward the current song.',
+    usage: ['forward <MM:SS | Seconds>'],
     execute(message, args) {
         const server = message.client.servers.get(message.guild.id);
         const queue = server.queue;
@@ -31,7 +32,7 @@ module.exports = {
                 forward = mins*60 + secs;
             }
         } else {
-            return message.channel.send(`**Usage:** \`${server.prefix}forward <MM:SS | seconds>\` (${message.author})`).catch(console.error);
+            return message.channel.send(`**Usage:** \`${server.prefix}forward <MM:SS | Seconds>\` (${message.author})`).catch(console.error);
         }
 
         if(forward >= remaining)

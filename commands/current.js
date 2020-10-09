@@ -6,6 +6,7 @@ module.exports = {
     symbol: '🎵',
     category: 'basic',
     description: "Display current song info.",
+    usage: ['current'],
     execute(message) {
         const server = message.client.servers.get(message.guild.id);
         const queue = server.queue;

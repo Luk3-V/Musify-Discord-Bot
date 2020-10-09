@@ -4,7 +4,8 @@ module.exports = {
     name: 'stop',
     symbol: '⏹',
     category: 'basic',
-    description: 'Stops playing songs.',
+    description: 'Stops playing songs & leaves the voice channel.',
+    usage: ['stop'],
     execute(message) {
         const server = message.client.servers.get(message.guild.id);
         const queue = server.queue;

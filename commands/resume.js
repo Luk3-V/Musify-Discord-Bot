@@ -5,6 +5,7 @@ module.exports = {
 	symbol: '▶',
 	category: 'basic',
 	description: 'Resume the current song.',
+	usage: ['resume'],
 	execute(message) {
 		const server = message.client.servers.get(message.guild.id);
 		const queue = server.queue;

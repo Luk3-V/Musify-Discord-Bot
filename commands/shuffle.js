@@ -1,10 +1,9 @@
-
-
 module.exports = {
     name: 'shuffle',
     symbol: '🔀',
     category: 'basic',
-    description: "Shuffle queue.",
+    description: "Shuffle the queue into a random order.",
+    usage: ['shuffle'],
     execute(message) {
         const server = message.client.servers.get(message.guild.id);
         const queue = server.queue;
