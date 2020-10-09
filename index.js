@@ -3,7 +3,7 @@ loadConfig(process.env);
 
 const { Client, Collection } = require('discord.js');
 const { readdirSync } = require('fs');
-const { waitTimer } = require("./util/wait_timer.js");
+const { waitTimer } = require("./util/timers.js");
 const { newSettings, saveSettings, getSettings } = require("./util/settings.js");
 const config = require('./config.json');
 
@@ -51,7 +51,7 @@ client.on('message', message => {
 	}
 
 	const messageStr = message.content.trim();
-	if(messageStr.startsWith(config.PREFIX + 'help')) // HELP USING OLD PREFIX
+	if(!messageStr.startsWith(server.prefix) && messageStr.startsWith(config.PREFIX + 'help')) // HELP USING OLD PREFIX
 		return message.channel.send(`**Prefix changed! Use:** \`${server.prefix}help\`(${message.author})`).catch(console.error);
 	if(!messageStr.startsWith(server.prefix) || message.author.bot) return;
 

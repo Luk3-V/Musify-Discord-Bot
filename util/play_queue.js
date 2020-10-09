@@ -1,6 +1,8 @@
 const { YOUTUBE_API_KEY } = require("../config.json");
 const { createQueue } = require("./create_queue.js");
 const { loadAutoplay } = require('./load_autoplay.js');
+const { autoplayTimer } = require("../util/timers.js");
+const { MessageEmbed } = require("discord.js");
 const ytdl = require("ytdl-core");
 const ytdlDiscord = require('ytdl-core-discord');
 const YouTubeAPI = require("simple-youtube-api");
@@ -22,10 +24,21 @@ module.exports = {
     		if(server.autoplay && queue.autoSongs.length) { // Autoplay
     			queue.current = queue.autoSongs.shift();
     			queue.auto = true;
+    			if(!server.timer) // Start autoplay timer
+    				autoplayTimer(server, 900);
+    			else if(server.timer = 'done') { // Verify to continue autoplay
+    				server.timer = null;
+					if(await verifyAutoplay(queue))
+						autoplayTimer(server, 900);
+					else {
+						queue.voiceChannel.leave();
+						return;
+					}	
+ 				}
     		} 
     		else { // Stop
     			queue.voiceChannel.leave();
-				message.client.queues.delete(message.guild.id);
+				server.queue = null;
 				return;
     		}
     	} 
@@ -62,7 +75,7 @@ module.exports = {
 	    	const dispatcher = queue.connection.play(queue.current.stream, { seek: queue.current.seekTime });	 
 
 	    	dispatcher.on('start', async () => { 
-	    		if(message.client.autoplay) { // Create new autoplay queue
+	    		if(server.autoplay) { // Create new autoplay queue
 	    			if(queue.auto && queue.autoSongs.length < 3)
 	    				loadAutoplay(queue.previous, message);
 	    			else if(queue.autoSongs.length < 3)
@@ -92,3 +105,30 @@ module.exports = {
     	}
 	}
 };
+
+verifyAutoplay = async (queue) => {
+	let result = false;
+	let song = queue.current;
+
+	let verifyEmbed = new MessageEmbed()
+        .setColor('#1DB954')
+        .setTitle('❓  Continue Autoplay?')
+        .setDescription('**Up Next:** ' + song[0]+' - '+song[1]);
+
+	let embed = await queue.textChannel.send(verifyEmbed);
+	await embed.react('👍');
+	await embed.react('👎');
+
+	await embed.awaitReactions((reaction, user) => queue.voiceChannel.members.has(user.id) && (reaction.emoji.name == '👍' || reaction.emoji.name == '👎'), { max: 1, time: 15000 })
+		.then(collected => {
+            if(collected.first().emoji.name == '👍')
+                result = true;
+            else 	            	
+                queue.textChannel.send(`**👎 Autoplay Ended** (${collected.first().users.cache.last()})`);
+	    }).catch(() => {
+            queue.textChannel.send('**👎 Ended Autoplay** (No Response)');
+		});
+	embed.delete();
+
+	return result;
+}

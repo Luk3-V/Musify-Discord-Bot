@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const { waitTimer } = require("../util/wait_timer.js");
+const { waitTimer } = require("../util/timers.js");
 
 module.exports = {
     name: 'pause',
