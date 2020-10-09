@@ -28,7 +28,7 @@ module.exports = {
             .setDescription(`**Prefix: \`${server.prefix}\`**`)     
             .addField('Basic:', basic.join(''), true)
             .addField('Advanced:', advanced.join(''), true)
-            .setFooter(`\"${message.client.prefix}help <Command>\" for more info`);
+            .setFooter(`\"${server.prefix}help <Command>\" for more info`);
 
 
         return message.channel.send(helpEmbed).catch(console.error);
