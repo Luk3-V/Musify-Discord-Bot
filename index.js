@@ -57,7 +57,8 @@ client.on('message', message => {
 
 	const args = messageStr.substring(server.prefix.length).split(/ +/);
 	const commandStr = args.shift().toLowerCase();
-	const command = client.commands.get(commandStr); 
+	const command = client.commands.get(commandStr) || 
+					client.commands.find((cmd) => cmd.aliases && cmd.aliases.includes(commandStr));; 
 
 	if(commandStr === 'save') { // TEMPORARY SAVE SERVER SETTINGS
 		saveSettings(client.servers);
