@@ -19,6 +19,7 @@ module.exports = {
     		console.log(`[${message.guild.id}] SEEK ${queue.seek}`);
     		queue.seek = false;
     		queue.playing = true;
+    		server.timer = null;
     	} 
     	else if(!queue.songs.length) { 
     		if(server.autoplay && queue.autoSongs.length) { // Autoplay
@@ -26,7 +27,7 @@ module.exports = {
     			queue.auto = true;
     			if(!server.timer) // Start autoplay timer
     				autoplayTimer(server, 900);
-    			else if(server.timer = 'done') { // Verify to continue autoplay
+    			else if(server.timer == 'done') { // Verify to continue autoplay
     				server.timer = null;
 					if(await verifyAutoplay(queue))
 						autoplayTimer(server, 900);
@@ -43,6 +44,7 @@ module.exports = {
     		}
     	} 
     	else { // Next
+    		server.timer = null;
     		queue.current = queue.songs.shift();
     		queue.auto = false;
     		queue.autoSongs = [];
