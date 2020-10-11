@@ -121,7 +121,7 @@ verifyAutoplay = async (queue) => {
 	await embed.react('👍');
 	await embed.react('👎');
 
-	await embed.awaitReactions((reaction, user) => queue.voiceChannel.members.has(user.id) && (reaction.emoji.name == '👍' || reaction.emoji.name == '👎'), { max: 1, time: 15000 })
+	await embed.awaitReactions((reaction, user) => queue.voiceChannel.members.has(user.id) && (reaction.emoji.name == '👍' || reaction.emoji.name == '👎'), { max: 1, time: 30000 })
 		.then(collected => {
             if(collected.first().emoji.name == '👍')
                 result = true;
