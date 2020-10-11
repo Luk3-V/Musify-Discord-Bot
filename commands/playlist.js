@@ -1,7 +1,5 @@
 const { YOUTUBE_API_KEY, MAX_PLAYLIST_SIZE } = require("../config.json");
-const { createPlaylist } = require('../spotify/create_playlist.js');
-const { recommendPlaylist } = require('../spotify/recommend_playlist.js');
-const { searchPlaylist } = require('../spotify/search_playlist.js');
+const { getPlaylist, searchPlaylist, createPlaylist, recommendPlaylist } = require('../spotify/spotify_playlist.js');
 const { playQueue } = require("../util/play_queue.js");
 const { createQueue } = require("../util/create_queue.js");
 const { MessageEmbed, escapeMarkdown } = require("discord.js");
@@ -9,7 +7,8 @@ const ytdl = require("ytdl-core");
 const YouTubeAPI = require("simple-youtube-api");
 const youtube = new YouTubeAPI(YOUTUBE_API_KEY);
 
-const playlistPattern = /^.*(youtu.be\/|list=)([^#\&\?]*).*/gi;
+const youtubePlaylist = /^.*(youtu.be\/|list=)([^#\&\?]*).*/gi;
+const spotifyPlaylist = /^(https?:\/\/)?(open\.)?spotify\.com\/playlist\/.+$/gi;
 
 module.exports = {
     name: 'playlist',
@@ -39,6 +38,8 @@ module.exports = {
 
 	    // Load Playlist
 
+	    let title;
+	    let songs = [];
 	   	let playlist = [];
 	   	let playlistEmbed = new MessageEmbed()
 	   		.setColor('#1DB954')
@@ -46,7 +47,7 @@ module.exports = {
 
 	    message.channel.send(`**Loading...**`).catch(console.error);
 
-	    if(args.length && playlistPattern.test(args[0])) { // Youtube playlist
+	    if(args.length && youtubePlaylist.test(args[0])) { // Youtube playlist
 	    	try {
 				const search = await youtube.getPlaylist(args[0], { part: 'snippet' });
 				playlist = await search.getVideos(MAX_PLAYLIST_SIZE || 10, { part: 'snippet' });
@@ -57,9 +58,11 @@ module.exports = {
 				console.error(`[${message.guild.id}] ${error}`);
 				return message.channel.send(`⚠ **No playlist found** (${message.author})`).catch(console.error);
 			}
-		} else if(args.length >= 2) { // Spotify playlist
-			let songs;
-			let title;
+		} else if(args.length && spotifyPlaylist.test(args[0])) { // Spotify playlist
+			[songs, title] = await getPlaylist(message, args[0], MAX_PLAYLIST_SIZE);
+			playlistEmbed.setTitle(title[0])
+		    		.setURL(title[1]);
+		} else if(args.length >= 2) { // Create playlist
 			let type;
 			let params = args.slice(1).join(" ");
 
@@ -86,24 +89,24 @@ module.exports = {
 		    if(title == 'genre-error') {
 		    	return message.channel.send(`No matching genres. Use \`${message.client.prefix}spotify genres\` to see valid genres (${message.author})`);
 		    }
-		    if(songs.length) {
-		    	try {
-			    	const searches = await Promise.all(songs.map(e => youtube.searchVideos(e[0]+' '+e[1]+' audio', 1)));
-					playlist = await Promise.all(searches.map(e => ytdl.getInfo(e[0].url)));
-				} catch(error) {
-					console.error(`[${message.guild.id}] ${error}`);
-	        		return message.channel.send(`⚠ **Song(s) not found** (${message.author})`).catch(console.error);
-				}
-		    }
 		}
 
+		if(songs.length) {
+	    	try {
+		    	const searches = await Promise.all(songs.map(e => youtube.searchVideos(e[0]+' '+e[1]+' audio', 1)));
+				playlist = await Promise.all(searches.map(e => ytdl.getInfo(e[0].url)));
+			} catch(error) {
+				console.error(`[${message.guild.id}] ${error}`);
+        		return message.channel.send(`⚠ **Song(s) not found** (${message.author})`).catch(console.error);
+			}
+	    }
 	    if(!playlist.length) {
-	    	return message.channel.send(`**Usage:** \`${server.prefix}playlist <Youtube URL>\`\n` +
-	    								`	**or** \`${server.prefix}playlist search <Spotify Playlist>\`` +
-	    								`	**or** \`${server.prefix}playlist create artist=[Artist1, Artist2, ...]\`\n` +
-	    								`	**or** \`${server.prefix}playlist recommend song=[Song1, Song2, ...]\`\n` +
-	    								`	**or** \`${server.prefix}playlist recommend artist=[Artist1, Artist2, ...]\`\n` +
-	    								`	**or** \`${server.prefix}playlist recommend genre=[Genre1, Genre2, ...]\`\n (${message.author})`).catch(console.error);
+	    	return message.channel.send(`**Usage:** \`${server.prefix}playlist <Youtube URL | Spotify URL>\`\n` +
+	    								`\t\t**or** \`${server.prefix}playlist search <Spotify Playlist>\`\n` +
+	    								`\t\t**or** \`${server.prefix}playlist create artist=[Artist1, Artist2, ...]\`\n` +
+	    								`\t\t**or** \`${server.prefix}playlist recommend song=[Song1, Song2, ...]\`\n` +
+	    								`\t\t**or** \`${server.prefix}playlist recommend artist=[Artist1, Artist2, ...]\`\n` +
+	    								`\t\t**or** \`${server.prefix}playlist recommend genre=[Genre1, Genre2, ...]\`\n (${message.author})`).catch(console.error);
 	    }
 
 	    // Queue Songs
@@ -111,7 +114,7 @@ module.exports = {
 	    const queueObject = await createQueue(playlist, message, voiceChannel);
 
 		if(!server.queue) {
-			message.client.queues.set(message.guild.id, queueObject);
+			server.queue = queueObject;
 
 			try { 
 				queueObject.connection = await voiceChannel.join();

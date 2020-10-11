@@ -1,5 +1,5 @@
 const { MAX_PLAYLIST_SIZE } = require("../config.json");
-const { autoPlaylist } = require('../spotify/auto_playlist.js');
+const { autoPlaylist } = require('../spotify/spotify_playlist.js');
 
 module.exports = {
 	async loadAutoplay(song, message) {

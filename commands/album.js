@@ -1,11 +1,13 @@
 const { YOUTUBE_API_KEY, MAX_PLAYLIST_SIZE } = require("../config.json");
-const { searchAlbum } = require('../spotify/search_album.js');
+const { searchAlbum, getAlbum } = require('../spotify/spotify_album.js');
 const { playQueue } = require("../util/play_queue.js");
 const { createQueue } = require("../util/create_queue.js");
 const { MessageEmbed, escapeMarkdown } = require("discord.js");
 const ytdl = require("ytdl-core");
 const YouTubeAPI = require("simple-youtube-api");
 const youtube = new YouTubeAPI(YOUTUBE_API_KEY);
+
+const spotifyAlbum = /^(https?:\/\/)?(open\.)?spotify\.com\/album\/.+$/gi;
 
 module.exports = {
     name: 'album',
@@ -37,9 +39,9 @@ module.exports = {
 
 	    // Load Album
 
-	    let playlist;
-	    let songs;
-		let title;
+	    let title;
+	    let songs = [];
+	    let playlist = [];
 		let params = args.join(" ");
 		let albumEmbed = new MessageEmbed()
 	   		.setColor('#1DB954')
@@ -47,9 +49,15 @@ module.exports = {
 
 	    message.channel.send(`**Loading...**`).catch(console.error);
 
-	    [songs, title] = await searchAlbum(params, MAX_PLAYLIST_SIZE);
-	    albumEmbed.setTitle(title[0])
-		    .setURL(title[1]);
+	    if(args.length && spotifyAlbum.test(args[0])) { // Spotify album
+			[songs, title] = await getAlbum(message, args[0], MAX_PLAYLIST_SIZE);
+			albumEmbed.setTitle(title[0])
+		    		.setURL(title[1]);
+		} else {
+			[songs, title] = await searchAlbum(params, MAX_PLAYLIST_SIZE);
+	    	albumEmbed.setTitle(title[0])
+		    	.setURL(title[1]);
+		}
 
 		if(songs.length) {
 	    	try {

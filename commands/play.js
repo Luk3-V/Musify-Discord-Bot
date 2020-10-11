@@ -1,15 +1,17 @@
 const { YOUTUBE_API_KEY } = require("../config.json");
 const { playQueue } = require("../util/play_queue.js");
 const { createQueue } = require("../util/create_queue.js");
-const { spotifySong } = require("../spotify/spotify_song.js");
+const { getSong } = require("../spotify/spotify_song.js");
 const { MessageEmbed } = require("discord.js");
 const ytdl = require("ytdl-core");
 const YouTubeAPI = require("simple-youtube-api");
 const youtube = new YouTubeAPI(YOUTUBE_API_KEY);	  
 
 const youtubePattern = /^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.?be)\/.+$/gi;
-const spotifyPattern = /^(https?:\/\/)?(open\.)?spotify\.com\/track\/.+$/gi;
-const playlistPattern = /^.*(list=)([^#\&\?]*).*/gi;
+const spotifyPattern = /^(https?:\/\/)?(open\.)?spotify\.com\/.+$/gi;
+const youtubePlaylist = /^.*(list=)([^#\&\?]*).*/gi;
+const spotifyPlaylist = /^.*\/playlist\/.*/gi;
+const spotifyAlbum = /^.*\/album\/.*/gi;
 
 module.exports = {
 	name: 'play',
@@ -34,7 +36,7 @@ module.exports = {
 
 		if(!args.length)
 	    	return message.channel.send(`**Usage:** \`${server.prefix}play <YouTube URL | Spotify URL>\`\n` +
-	    								`	**or** \`${server.prefix}play <Video Name>\` (${message.author})`).catch(console.error);
+	    								`\t\t**or** \`${server.prefix}play <Video Name>\` (${message.author})`).catch(console.error);
 
 	  	const permissions = voiceChannel.permissionsFor(message.client.user);
 	    if(!permissions.has("CONNECT"))
@@ -46,19 +48,33 @@ module.exports = {
 
 		let songInfo = null;
 
-	    if(!youtubePattern.test(args[0]) && playlistPattern.test(args[0])) { // Youtube playlist url
+		const ytSong = youtubePattern.test(args[0]);
+		const spSong = spotifyPattern.test(args[0]); 
+		const ytPlaylist = youtubePattern.test(args[0]) && youtubePlaylist.test(args[0]);
+		const spPlaylist = spotifyPattern.test(args[0]) && spotifyPlaylist.test(args[0]);
+		const spAlbum = spotifyPattern.test(args[0]) && spotifyAlbum.test(args[0]);
+
+	    if(ytPlaylist) { // Youtube playlist url
 			return message.client.commands.get('playlist').execute(message, args);
 		} 
+		if(spPlaylist) { // Spotify playlist url
+			return message.client.commands.get('playlist').execute(message, args);
+		} 
+		if(spAlbum) { // Spotify album url
+			return message.client.commands.get('album').execute(message, args);
+		}
 
-		if(youtubePattern.test(args[0])) { // Youtube video url
+		if(ytSong) { // Youtube video url
 	    	try {
 	        	songInfo = await ytdl.getInfo(args[0]);
 	      	} catch(error) {
 	        	console.error(error);
 	        	return message.channel.send(`⚠ **Error:** ${error.message} (${message.author})`).catch(console.error);
 	      	}
-	    } else if(spotifyPattern.test(args[0])) { // Spotify video url 
-	    	const spfySong = await spotifySong(message, args[0]);
+	    } else if(spSong) { // Spotify song url 
+	    	const spfySong = await getSong(message, args[0]);
+	    	if(!spfySong)
+	        	return message.channel.send(`⚠ **No song found** (${message.author})`).catch(console.error);
 	    	try {
 	        	const search = await youtube.searchVideos(spfySong[0]+' '+spfySong[1]+' audio', 1);
 	        	songInfo = await ytdl.getInfo(search[0].url);
